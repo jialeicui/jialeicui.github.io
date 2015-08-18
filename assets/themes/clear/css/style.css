@@ -133,7 +133,13 @@ code {
     padding: 0 3px;
 }
 
-td {
+table th {
+    border: solid #dbdfd6 1px;
+    text-align: left;
+    padding: 5px;
+}
+
+table td {
     border: solid #dbdfd6 1px;
     text-align: left;
     padding: 5px;
