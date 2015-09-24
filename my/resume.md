@@ -44,3 +44,6 @@ title: Resume
 	* 负责实现同合作方的虚拟DPU通讯方案
 	* 关键词:Windows/C++ builder/OPC
 	* 实现了OPC通信服务器端以及教练员操作站,使得仿真项目顺利验收
+
+	<br/>
+	<a href="/my/resume.pdf">下载PDF版简历</a>
