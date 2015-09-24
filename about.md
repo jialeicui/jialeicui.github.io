@@ -7,7 +7,9 @@ title: About
 熟练: C/C++  
 熟悉: python, php, Go  
 
-自己实现的一个博客 [yadam.sinaapp.com](http://yadam.sinaapp.com)  
+[我的简历](/my/resume.html)
+
+自己实现的一个[博客](http://yadam.sinaapp.com)  
 
 <span class="icon icon--github">
 	<svg viewBox="0 0 16 16">
