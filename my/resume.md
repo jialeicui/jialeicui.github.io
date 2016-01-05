@@ -16,11 +16,11 @@ title: Resume
 ##工作经历
 **6年工作经验**
 
-* [新浪网技术(中国)有限公司](http://corp.sina.com.cn/chn/sina_index.html)  &nbsp;&bull; 高级软件工程师  &bull; 2013.10 至今
+* [新浪网技术(中国)有限公司](http://corp.sina.com.cn/chn/sina_index.html)  &nbsp;&bull; 高级软件工程师  &bull; 2013.10 至今  
 负责开发维护新浪权威DNS服务器软件以及多种高性能高并发基础服务软件, 了解常用的运维体系架构
-* [杭州华三通信技术有限公司](http://www.h3c.com.cn/About_H3C/)  &bull; 驱动开发工程师 &bull; 2010.08 — 2013.10
+* [杭州华三通信技术有限公司](http://www.h3c.com.cn/About_H3C/)  &bull; 驱动开发工程师 &bull; 2010.08 — 2013.10  
 负责开发公司多款中端路由器的报文收发、 MAC地址管理、ACL、协议模块等, 积累了大量底层开发、调试、调优经验
-* [北京大风天利科技有限公司](http://www.hhdf.com) &bull; 软件开发工程师 &bull; 2009.07 — 2010.08
+* [北京大风天利科技有限公司](http://www.hhdf.com) &bull; 软件开发工程师 &bull; 2009.07 — 2010.08  
 开发维护公司的仿真系统软件，使用C++开发Windows应用，熟练掌握MFC
 
 ##教育经历
@@ -50,3 +50,4 @@ title: Resume
 
 	<br/>
 	<a href="/my/resume.pdf">下载PDF版简历</a>
+
