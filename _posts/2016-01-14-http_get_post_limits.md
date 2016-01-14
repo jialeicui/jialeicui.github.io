@@ -26,12 +26,12 @@ HTTP协议对GET没有做明确的限制(超出可以返回414), 所以这个最
 * POST
 和GET一样, 协议没有做明确限制, limit=MIN(Server limit, Client limit)
 	* Server
-		* Apache: `LimitRequestBody` [参考](http://httpd.apache.org/docs/2.0/mod/core.html#limitrequestbody)  
+		* Nginx: `client_max_body_size`  
+		* PHP: `post_max_size`  
+		* Apache: `LimitRequestBody` [参考](http://httpd.apache.org/docs/2.0/mod/core.html#limitrequestbody)
 
-		> This directive specifies the number of bytes from 0 (meaning unlimited) to 2147483647 (2GB) that are allowed in a request body.
-		
-		* Nginx: `client_max_body_size`
-		* PHP: `post_max_size`
+		> This directive specifies the number of bytes from 0 (meaning unlimited) to 2147483647 (2GB) that are allowed in a request body.  <br/>
+
 	* Client [参考](http://www.motobit.com/help/scptutl/pa98.htm)
 		* Firefox: 2G
 		* Safari: >4GB
