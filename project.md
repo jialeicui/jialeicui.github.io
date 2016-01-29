@@ -1,6 +1,6 @@
 ---
 layout: page
-title: About
+title: Project
 ---
 
 * [从MAC地址判断网络设备生产商] (http://macbelongsto.sinaapp.com) (Python)
