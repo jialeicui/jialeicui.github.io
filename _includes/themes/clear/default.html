@@ -1,6 +1,9 @@
 <!DOCTYPE HTML>
 <html lang="zh-ch" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+{% if page.theme.name == null %}
+  {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/clear{% endcapture %}
+{% endif %}
   <title>{{ page.title }}{% if page.title != site.title %} {% if page.title != null %} | {% endif %} {{ site.title }}{% endif %}</title>
   {% if page.description %}<meta name="description" content="{{ page.description }}" />{% endif %}
   <meta name="author" content="{{ site.author.name }}" />
