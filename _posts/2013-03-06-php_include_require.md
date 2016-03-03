@@ -2,7 +2,7 @@
 layout: post
 title:  "php下的include和require"
 date:   2013-03-06
-categories: php
+categories: PHP
 ---
 
 摘自[When should I use require_once vs include?](http://stackoverflow.com/questions/2418473/when-should-i-use-require-once-vs-include)  
