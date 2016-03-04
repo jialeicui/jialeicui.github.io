@@ -1,0 +1,55 @@
+/**
+ * post page
+ */
+
+@mixin header-title() {
+	color: white;
+	// padding-left: 30px;
+}
+
+.post-title {
+	@include header-title;
+	padding-top: 20px;
+}
+
+.post-meta {
+	@include header-title;
+	padding-bottom: 20px;
+}
+
+.post-link {
+    font-size: 20px;
+    color: $title-color;
+}
+
+.post-date {
+	color: $grey-color;
+	font-size: 13px;
+}
+
+.post-description {
+	color: $grey-color;
+	font-size: 13px;
+}
+
+table {
+	max-width: 100%;
+	border-collapse: collapse;
+	tr {
+		th,td {
+			border: solid #dbdfd6 1px;
+			padding: 5px;
+		}
+	}
+}
+
+.site-footer-links {
+	margin: 0;
+	list-style: none;
+	font-size: 13px;
+	li {
+		display: inline-block;
+	}
+}
+
+

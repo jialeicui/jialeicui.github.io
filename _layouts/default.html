@@ -1,6 +1,34 @@
----
-theme :
-  name : clear
----
-{% include JB/setup %}
-{% include themes/clear/default.html %}
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body>
+
+    {% include header.html %}
+
+    <div class="page-content">
+      <div class="">
+        {{ content }}
+      </div>
+    </div>
+
+    {% include footer.html %}
+
+  </body>
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/geopattern.min.js"></script>
+<script>
+  jQuery(document).ready(function($) {
+        $('.post-header').each(function(){
+          // $(this).geopattern();
+          $(this).geopattern($(this).data('geopattern-key'));
+        });
+
+        // every link open in new tab
+        $('a[href^="http"]').each(function () {
+          $(this).attr('target', '_blank');
+        });
+     });
+</script>
+</html>

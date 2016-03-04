@@ -5,12 +5,13 @@ date:   2014-07-07
 categories: linux kernel
 ---
 
-##问题引出
+## 问题引出
+
 在FreeBSD下的 `kqueue` 可以用来监控普通文件的变化, 可参考 [developer.apple.com](https://developer.apple.com/library/mac/documentation/Darwin/Conceptual/FSEvents_ProgGuide/KernelQueues/KernelQueues.html) 的说明.  
 自然想到Linux下类似功能的 `epoll`  
 尝试写一个小程序:
 
-```
+```c
 #include <stdio.h>
 #include <sys/epoll.h>
 #include <fcntl.h>
@@ -46,17 +47,20 @@ int main()
 
 编译运行一下:
 
-```
+```sh
 [root@localhost epoll]# gcc main.c    
 [root@localhost epoll]# ./a.out 
 epoll ctl add: Operation not permitted
 ```
 
 出错了, 很直观的猜测原因:   
+
 ` man epoll_wait`
+
 >The  epoll_wait()  system  call  waits  for events on the epoll instance referred to by the file descriptor epfd.
 
 `man epoll_ctl`
+
 >EPOLLIN: The associated file is available for read(2) operations.
 
 很简单, 普通文件在任何情况下都是可写的, 压根不需要 epoll 来 "wait" 嘛.   
@@ -64,13 +68,16 @@ epoll ctl add: Operation not permitted
 >The target file fd does not support epoll.
 
 那就顺着这个找原因
-##为什么不支持?
-###epoll实现
+
+## 为什么不支持?
+
+### epoll实现
+
 源码位于 [fs/eventpoll.c](http://lxr.free-electrons.com/source/fs/eventpoll.c) 
 
 查看 `epoll_ctl` 实现中有如下流程:
 
-```
+```c
 SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
         struct epoll_event __user *, event)
 {
@@ -88,17 +95,18 @@ SYSCALL_DEFINE4(epoll_ctl, int, epfd, int, op, int, fd,
 
 看到这里会检查 file 结构体中是否配置了 `poll` 函数, 如果没有, 就会返回 `EPERM` .
 
-###文件系统相关
+### 文件系统相关
+
 我的实验环境是:
 
-```
+```sh
 [root@localhost epoll]# file -s /dev/sda5 
 /dev/sda5: Linux rev 1.0 ext3 filesystem data (needs journal recovery) (large files)
 ```
 
 查看 ext3 的实现, 位于 [fs/ext3/file.c](http://lxr.free-electrons.com/source/fs/ext3/file.c) ,看到
 
-```
+```c
 const struct file_operations ext3_file_operations = {
     .llseek     = generic_file_llseek,
     .read       = do_sync_read,
@@ -122,7 +130,8 @@ file 结构体中 `f_op` (struct file\_operations) 的赋值中没有 poll 函�
 
 另, `poll` 和 `select` 也是调用的这个 poll 函数
 
-##什么可以使用epoll
+## 什么可以使用epoll
+
 根据前面的分析, 有 poll 函数才能支持 epoll, 在 Linux 源码中的 fs 下的源码中搜索 `\.poll\s*=` , 看到以下这些文件系统都支持 poll:
 
 * eventfd

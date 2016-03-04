@@ -3,17 +3,20 @@ layout: page
 title: Resume
 ---
 
-##能力简介
+## 能力简介
+
 * 6年 C/C++ 开发经验, 熟悉常见数据结构和设计模式
 * 熟悉 Linux 下的开发, 有内核程序和用户态程序开发经验
 * 熟悉 kdb, gdb, perf 等 debug / 调优工具
 * 熟悉 Python / php / Go  
 
-##博客/项目
+## 博客/项目
+
 * [https://github.com/jialeicui](https://github.com/jialeicui)
 * [http://jialeicui.github.io](http://jialeicui.github.io)
 
-##工作经历
+## 工作经历
+
 **6年工作经验**
 
 * [新浪网技术(中国)有限公司](http://corp.sina.com.cn/chn/sina_index.html)  &nbsp;&bull; 高级软件工程师  &bull; 2013.10 至今  
@@ -23,10 +26,12 @@ title: Resume
 * [北京大风天利科技有限公司](http://www.hhdf.com) &bull; 软件开发工程师 &bull; 2009.07 — 2010.08  
 开发维护公司的仿真系统软件，使用C++开发Windows应用，熟练掌握MFC
 
-##教育经历
+## 教育经历
+
 中国传媒大学 &bull; 本科 &bull; 自动化 &bull; 2009年毕业
 
-##项目经验
+## 项目经验
+
 * 基于HTTP的DNS查询系统
 	* 架构设计及开发
 	* 关键词: nginx / http / 防劫持 / C++

@@ -5,12 +5,14 @@ date:   2014-11-21
 categories: linux
 ---
 
-####Linux对ICMP报文的限速可配置
+### Linux对ICMP报文的限速可配置
+
 操作系统对于ICMP报文有一个速率的限制,具体的限制参数都在
 `/proc/sys/net/ipv4`文件夹.  
 
 ---
-####配置说明
+
+### 配置说明
 
 以线上服务器为例,有以下两个重要参数
 
@@ -19,14 +21,16 @@ categories: linux
 
 这两个参数的意义可以参考 [man 7 icmp](http://man7.org/linux/man-pages/man7/icmp.7.html)
 
-#####icmp_ratelimit  
+#### icmp_ratelimit  
+
 默认是1000  
 用于限制ICMP报文的速率,至于限制哪些报文的速率在icmp_ratemask设置.(至于速率是指所有的还是单独的需要再确认)  
 此数值表示的意思是每次发送完ICMP报文以后延迟多长时间,单位是1ms  
 例如1000的意思是:每发一个ICMP报文,1s之后才能再次发送.  
 0表示没有限制  
 
-#####icmp_ratemask
+#### icmp_ratemask
+
 需要限制的报文类型  
 此数值每个二进制位代表一种类型的报文.  
 ICMP类型的定义见icmp.h,通常位置为`/usr/include/linux/icmp.h`  
@@ -59,9 +63,10 @@ ICMP类型的定义见icmp.h,通常位置为`/usr/include/linux/icmp.h`
 sysctl -p 生效
 
 ---
-####测试
 
-```
+### 测试
+
+```log
 15:59:23.407311 IP 202.108.7.153.domain > 10.209.1.7.61060:  44159*- 1/6/6 A 123.125.104.197 (263)
 15:59:23.416546 IP 10.209.1.7.56533 > 202.108.7.153.domain:  2090+ A? weibo.com. (27)
 15:59:23.417309 IP 202.108.7.153.domain > 10.209.1.7.56533:  2090*- 1/6/6 A 123.125.104.197 (263)

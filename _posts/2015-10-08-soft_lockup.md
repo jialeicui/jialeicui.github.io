@@ -1,32 +1,80 @@
 ---
 layout: post
-title:  soft lockup
+title:  Soft Lockup
 date:   2015-10-08
 categories: linux kernel
 ---
 本文基于Linux 2.6.32.67
 
-###什么是soft lockup
+### 什么是soft lockup
 
 >A 'softlockup' is defined as a bug that causes the kernel to loop in
 kernel mode for more than 20 seconds (see "Implementation" below for
 details), without giving other tasks a chance to run.
 
 soft lockup 出现时, 一般能从远端 ping 通主机, 但是命令行全都无效, 基本无法工作.
-###检测原理
+
+### 检测原理
+
 检测soft lockup的实现在 `kernel/softlockup.c` 中
 
-```
+```c
 // early_initcall ->
 // spawn_softlockup_task ->
-static int __cpuinit cpu_callback(struct notifier_block *nfb, unsigned long action, void *hcpu){	int hotcpu = (unsigned long)hcpu;	struct task_struct *p;	switch (action) {	case CPU_UP_PREPARE:	case CPU_UP_PREPARE_FROZEN:		BUG_ON(per_cpu(watchdog_task, hotcpu));
-		//创建内核线程,名字是watchdog/X		p = kthread_create(watchdog, hcpu, "watchdog/%d", hotcpu);		if (IS_ERR(p)) {			printk(KERN_ERR "watchdog for %i failed\n", hotcpu);			return NOTIFY_BAD;		}		per_cpu(touch_timestamp, hotcpu) = 0;		per_cpu(watchdog_task, hotcpu) = p;
-		//绑定cpu		kthread_bind(p, hotcpu);
+static int __cpuinit cpu_callback(struct notifier_block *nfb, unsigned long action, void *hcpu)
+{
+	int hotcpu = (unsigned long)hcpu;
+	struct task_struct *p;
+
+	switch (action) {
+	case CPU_UP_PREPARE:
+	case CPU_UP_PREPARE_FROZEN:
+		BUG_ON(per_cpu(watchdog_task, hotcpu));
+		//创建内核线程,名字是watchdog/X
+		p = kthread_create(watchdog, hcpu, "watchdog/%d", hotcpu);
+		if (IS_ERR(p)) {
+			printk(KERN_ERR "watchdog for %i failed\n", hotcpu);
+			return NOTIFY_BAD;
+		}
+		per_cpu(touch_timestamp, hotcpu) = 0;
+		per_cpu(watchdog_task, hotcpu) = p;
+		//绑定cpu
+		kthread_bind(p, hotcpu);
 	...
 }
 
-/* * The watchdog thread - runs every second and touches the timestamp. */static int watchdog(void *__bind_cpu){	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };	//设置为先进先出的实时优先级,并设置最高优先级MAX_RT_PRIO-1	sched_setscheduler(current, SCHED_FIFO, &param);	/* initialize timestamp */
-	// 获取系统时间, 粗略的取了秒值 cpu_clock(this_cpu) >> 30LL;	__touch_softlockup_watchdog();	set_current_state(TASK_INTERRUPTIBLE);	/*	 * Run briefly once per second to reset the softlockup timestamp.	 * If this gets delayed for more than 60 seconds then the	 * debug-printout triggers in softlockup_tick().	 */	while (!kthread_should_stop()) {		__touch_softlockup_watchdog();		schedule();		if (kthread_should_stop())			break;		set_current_state(TASK_INTERRUPTIBLE);	}	__set_current_state(TASK_RUNNING);	return 0;}
+/*
+ * The watchdog thread - runs every second and touches the timestamp.
+ */
+static int watchdog(void *__bind_cpu)
+{
+	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
+	//设置为先进先出的实时优先级,并设置最高优先级MAX_RT_PRIO-1
+	sched_setscheduler(current, SCHED_FIFO, &param);
+
+	/* initialize timestamp */
+	// 获取系统时间, 粗略的取了秒值 cpu_clock(this_cpu) >> 30LL;
+	__touch_softlockup_watchdog();
+
+	set_current_state(TASK_INTERRUPTIBLE);
+	/*
+	 * Run briefly once per second to reset the softlockup timestamp.
+	 * If this gets delayed for more than 60 seconds then the
+	 * debug-printout triggers in softlockup_tick().
+	 */
+	while (!kthread_should_stop()) {
+		__touch_softlockup_watchdog();
+		schedule();
+
+		if (kthread_should_stop())
+			break;
+
+		set_current_state(TASK_INTERRUPTIBLE);
+	}
+	__set_current_state(TASK_RUNNING);
+
+	return 0;
+}
 ```
 此处设置优先级和调度(schedule)相关的说明可参考我的另一篇文章[Linux进程调度](/linux/kernel/2015/07/14/schedule.html)
 
@@ -38,19 +86,86 @@ static int __cpuinit cpu_callback(struct notifier_block *nfb, unsigned long acti
 
 但是这样不足以完成检测 soft lockup 的功能, 还需要其他地方的配合, 就是要检查 `touch_timestamp` 变量是否在规定时间内被更新
 
-```
+```c
 // 此函数会被 hrtimer 的中断定期调用
-/* * This callback runs from the timer interrupt, and checks * whether the watchdog thread has hung or not: */void softlockup_tick(void){	int this_cpu = smp_processor_id();	unsigned long touch_timestamp = per_cpu(touch_timestamp, this_cpu);	unsigned long print_timestamp;	struct pt_regs *regs = get_irq_regs();	unsigned long now;	/* Is detection switched off? */	if (!per_cpu(watchdog_task, this_cpu) || softlockup_thresh <= 0) {		/* Be sure we don't false trigger if switched back on */		if (touch_timestamp)			per_cpu(touch_timestamp, this_cpu) = 0;		return;	}	if (touch_timestamp == 0) {		__touch_softlockup_watchdog();		return;	}	print_timestamp = per_cpu(print_timestamp, this_cpu);	/* report at most once a second */	if (print_timestamp == touch_timestamp || did_panic)		return;	/* do not print during early bootup: */	if (unlikely(system_state != SYSTEM_RUNNING)) {		__touch_softlockup_watchdog();		return;	}	now = get_timestamp(this_cpu);	/*	 * Wake up the high-prio watchdog task twice per	 * threshold timespan.	 */	if (time_after(now - softlockup_thresh/2, touch_timestamp))		wake_up_process(per_cpu(watchdog_task, this_cpu));	/* Warn about unreasonable delays: */	if (time_before_eq(now - softlockup_thresh, touch_timestamp))		return;	per_cpu(print_timestamp, this_cpu) = touch_timestamp;	spin_lock(&print_lock);	printk(KERN_ERR "BUG: soft lockup - CPU#%d stuck for %lus! [%s:%d]\n",			this_cpu, now - touch_timestamp,			current->comm, task_pid_nr(current));	print_modules();	print_irqtrace_events(current);	if (regs)		show_regs(regs);	else		dump_stack();	spin_unlock(&print_lock);	if (softlockup_panic)		panic("softlockup: hung tasks");}
+/*
+ * This callback runs from the timer interrupt, and checks
+ * whether the watchdog thread has hung or not:
+ */
+void softlockup_tick(void)
+{
+	int this_cpu = smp_processor_id();
+	unsigned long touch_timestamp = per_cpu(touch_timestamp, this_cpu);
+	unsigned long print_timestamp;
+	struct pt_regs *regs = get_irq_regs();
+	unsigned long now;
+
+	/* Is detection switched off? */
+	if (!per_cpu(watchdog_task, this_cpu) || softlockup_thresh <= 0) {
+		/* Be sure we don't false trigger if switched back on */
+		if (touch_timestamp)
+			per_cpu(touch_timestamp, this_cpu) = 0;
+		return;
+	}
+
+	if (touch_timestamp == 0) {
+		__touch_softlockup_watchdog();
+		return;
+	}
+
+	print_timestamp = per_cpu(print_timestamp, this_cpu);
+
+	/* report at most once a second */
+	if (print_timestamp == touch_timestamp || did_panic)
+		return;
+
+	/* do not print during early bootup: */
+	if (unlikely(system_state != SYSTEM_RUNNING)) {
+		__touch_softlockup_watchdog();
+		return;
+	}
+
+	now = get_timestamp(this_cpu);
+
+	/*
+	 * Wake up the high-prio watchdog task twice per
+	 * threshold timespan.
+	 */
+	if (time_after(now - softlockup_thresh/2, touch_timestamp))
+		wake_up_process(per_cpu(watchdog_task, this_cpu));
+
+	/* Warn about unreasonable delays: */
+	if (time_before_eq(now - softlockup_thresh, touch_timestamp))
+		return;
+
+	per_cpu(print_timestamp, this_cpu) = touch_timestamp;
+
+	spin_lock(&print_lock);
+	printk(KERN_ERR "BUG: soft lockup - CPU#%d stuck for %lus! [%s:%d]\n",
+			this_cpu, now - touch_timestamp,
+			current->comm, task_pid_nr(current));
+	print_modules();
+	print_irqtrace_events(current);
+	if (regs)
+		show_regs(regs);
+	else
+		dump_stack();
+	spin_unlock(&print_lock);
+
+	if (softlockup_panic)
+		panic("softlockup: hung tasks");
+}
 ```
 可以看出这段代码的主要工作:
 
 * 每0.5个 softlockup\_thresh 间隔唤醒 watchdog 一次,使其刷新 per\_cpu 的 `touch_timestamp`
 * 检查当前 CPU 时间和 `touch_timestamp` 是否超过 softlockup\_thresh, 如果超过, 则打印信息或者 panic
 
-###如何调试
+### 如何调试
+
 出现 soft lockup 后, 在系统信息里会有类似下面的信息:
 
-```
+```sh
 Pid: 27196, comm: kni_single Not tainted 2.6.32-358.el6.x86_64 #1 IBM IBM System x3550 M4 Server -[7914O9E]-/00Y8603
 RIP: 0010:[<ffffffff8150ffce>]  [<ffffffff8150ffce>] _spin_lock+0x1e/0x30
 RSP: 0018:ffff880287543e10  EFLAGS: 00000297
@@ -85,7 +200,8 @@ Call Trace:
 [<ffffffff8100bb93>] ? apic_timer_interrupt+0x13/0x20
 ```
 
-###小技巧
+### 小技巧
+
 * `softlockup_thresh`  
 /proc/sys/kernel/softlockup\_thresh 用于配置前面提到的阈值
 

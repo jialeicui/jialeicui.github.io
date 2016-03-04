@@ -5,7 +5,8 @@ date:   2015-09-11
 categories: rsync linux inotifywait
 ---
 
-###初衷
+### 初衷
+
 用`rsync`推送一些配置文件到指定目录, `inotifywait` 监控此目录进行配置加载, 监控脚本类似下面这样
 
 ```
@@ -19,13 +20,15 @@ while true; do
 done
 ```
 
-###遇到的问题
+### 遇到的问题
+
 通过程序日志发现
 
 * 经常的会有类似 `.XX.conf.ztjZBc` 名字的文件被加载
 * 没有正常的配置文件被加载  
 
-###分析
+### 分析
+
 **异常文件名问题**
 
 看到文件名是以`.`开始, 并且以这种后缀结束, 猜测是 rsync 的临时文件用[文件原子操作](http://jialeicui.github.io/file/atomic/2015/05/19/文件原子写入内容.html),保证使用文件的程序直接得到完成的目标文件.  
@@ -40,7 +43,8 @@ side.  The default behavior is to create each temporary file in the same directo
 
 监控脚本中只监控了 `create` 事件, 而 rsync 推送的目标文件是通过 `mv` 完成的, 所以监控 `create` 事件起不了作用
 
-###解决
+### 解决
+
 **1.解决加载临时文件的问题**
 
 inotifywait 有一个 `--exclude` 选项, 支持正则表达式匹配
