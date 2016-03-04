@@ -34,6 +34,7 @@ done
 看到文件名是以`.`开始, 并且以这种后缀结束, 猜测是 rsync 的临时文件用[文件原子操作](http://jialeicui.github.io/file/atomic/2015/05/19/文件原子写入内容.html),保证使用文件的程序直接得到完成的目标文件.  
 
 man rsync, 在 `-T, --temp-dir=DIR`参数介绍中
+
 >This option instructs rsync to use DIR as a scratch directory when creating temporary copies of the files transferred  on  the  receiving
 side.  The default behavior is to create each temporary file in the same directory as the associated destination file.
 
@@ -48,6 +49,7 @@ side.  The default behavior is to create each temporary file in the same directo
 **1.解决加载临时文件的问题**
 
 inotifywait 有一个 `--exclude` 选项, 支持正则表达式匹配
+
 >Do not process any events whose filename matches the specified POSIX extended regular expression, case sensitive.
 
 修改脚本如下
@@ -67,6 +69,7 @@ done
 **2.解决加载临时文件的问题**
 
 inotifywait 中监控的事件有一个 `moved_to`
+
 >A file or directory was moved into a watched directory.  This event occurs even if the file is simply moved from and to the  same  direc-tory.
 
 修改脚本如下, 功能OK
