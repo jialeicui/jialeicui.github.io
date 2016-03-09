@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>typeahead alias demo</title>
+	<link rel="stylesheet" type="text/css" href="example.css">
+</head>
+<body>
+<div class="demo">
+	<div id="the-basics">
+	  <input class="typeahead tt-hint" type="text">
+	</div>
+  <br/>
+  <div class="gist">js and css from <a href="http://twitter.github.io/typeahead.js/examples/" target="_blank">twitter.github.io/typeahead.js/examples</a></div>
+</div>
+
+
+<script src="jquery-1.12.1.min.js"></script>
+<script src="typeahead.js/typeahead.jquery.min.js"></script>
+<script>
+var substringMatcher = function(dicts) {
+  return function findMatches(q, cb) {
+    var matches, substringRegex;
+    function matchInArray(reg, arr) {
+    	var ret = false;
+    	if (!arr) {
+    		return ret;
+    	}
+
+    	$.each(arr, function(i, str) {
+    		if (reg.test(str)) {
+    			ret = true;
+    			return;
+    		}
+    	});
+    	return ret;
+    }
+    matches = [];
+  	if (q === '') {
+  		$.each(dicts, function(k, v){
+  			matches.push(k);
+  		});
+  		cb(matches);
+  	} else {
+	    substrRegex = new RegExp(q, 'i');
+	    $.each(dicts, function(k, v) {
+	      if (substrRegex.test(k) || matchInArray(substrRegex, v)) {
+		    matches.push(k);
+	      }
+	    });
+	    cb(matches);
+	}
+  };
+};
+
+var states = {
+	'建议1':['foo', 'bar'],
+	'建议2':'',
+	'建议3':['test'],
+	'拼音':['py', 'pinyin'],
+  '树懒':['flash']
+};
+
+function customTokenizer(obj) {
+  return obj.tags.concat(Bloodhound.tokenizers.obj.whitespace('val'));
+}
+
+$('#the-basics .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 0
+},
+{
+  name: 'states',
+  source: substringMatcher(states)
+});
+
+</script>
+</body>
+</html>
