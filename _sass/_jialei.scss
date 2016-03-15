@@ -18,8 +18,8 @@
 }
 
 .post-link {
-    font-size: 20px;
-    color: $title-color;
+	font-size: 20px;
+	color: $title-color;
 }
 
 .post-date {
@@ -52,4 +52,58 @@ table {
 	}
 }
 
+
+.pagination-link {
+	height: 28px;
+	border-top: 1px dashed #898989;
+	margin: 10px 0 80px 0;
+	padding: 10px 0 0;
+	.prev {
+		float: left;
+	}
+	.next {
+		float: right;
+	}
+
+	a {
+		font-family: Georgia;
+		color: #000;
+		padding: 0 8px;
+		line-height: 28px;
+		&:hover {
+			color: $title-color;
+		}
+	}
+}
+
+.archive-list {
+	padding-top: 10px;
+	ul {
+		li {
+			a {
+				// color: $title-color;
+			}
+		}
+	}
+}
+
+.tag-list {
+	padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: 0;
+	list-style: none;
+    border-bottom: 1px dashed #898989;
+
+    > li {
+        display: inline-block;
+        padding-right: 10px;
+        a {
+        	color: $title-color;
+        	span {
+        		    vertical-align: super;
+				    font-size: 0.8em;
+        	}
+        }
+    }
+}
 
