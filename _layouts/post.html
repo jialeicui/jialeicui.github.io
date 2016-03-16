@@ -12,7 +12,7 @@ layout: default
   <div class="wrapper">
 	  <div class="post-content" itemprop="articleBody">
 	    {{ content }}
-      <span>本文地址 <a href="{{ page.url | prepend: site.url }}">{{ page.url | prepend: site.url }}</a> 转载请注明出处</span>
+      <span>本文地址 <a href="{{ page.url | prepend: site.url }}">{{ page.title }}</a> 转载请注明出处</span>
 	  </div>
     <nav class="pagination-link">
       {% if page.previous %}
