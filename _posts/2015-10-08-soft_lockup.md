@@ -76,7 +76,7 @@ static int watchdog(void *__bind_cpu)
 	return 0;
 }
 ```
-此处设置优先级和调度(schedule)相关的说明可参考我的另一篇文章[Linux进程调度](/linux/kernel/2015/07/14/schedule.html)
+此处设置优先级和调度(schedule)相关的说明可参考我的另一篇文章[Linux进程调度](/blog/schedule.html)
 
 上面的流程简单来讲就是:
 
