@@ -30,3 +30,4 @@ paginate:   10
 
 gems:
   - jekyll-paginate
+  - jekyll-sitemap
