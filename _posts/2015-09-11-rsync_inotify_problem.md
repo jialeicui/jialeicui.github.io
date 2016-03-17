@@ -31,7 +31,7 @@ done
 
 **异常文件名问题**
 
-看到文件名是以`.`开始, 并且以这种后缀结束, 猜测是 rsync 的临时文件用[文件原子操作](http://jialeicui.github.io/file/atomic/2015/05/19/文件原子写入内容.html),保证使用文件的程序直接得到完成的目标文件.  
+看到文件名是以`.`开始, 并且以这种后缀结束, 猜测是 rsync 的临时文件用[文件原子操作](/blog/file_atomic_operations.html),保证使用文件的程序直接得到完成的目标文件.  
 
 man rsync, 在 `-T, --temp-dir=DIR`参数介绍中
 
