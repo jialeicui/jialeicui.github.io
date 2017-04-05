@@ -7,7 +7,7 @@ categories: API网关
 
 ### kong src
 
-[从源码安装说明](https://www.postgresql.org/download/linux/redhat/)
+[从源码安装说明](https://getkong.org/install/source/)
 
 ### openssl
 

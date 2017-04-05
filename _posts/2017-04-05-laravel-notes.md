@@ -1,4 +1,9 @@
-###  Laravel 的一些总结
+---
+layout: post
+title:  "Laravel 的一些总结"
+date:   2017-04-05
+categories: Laravel PHP
+---
 
 *参考 Laravel 版本为 5.4*
 
