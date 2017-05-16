@@ -144,7 +144,7 @@ class Bar extends Facade
   - HandleExceptions
   - RegisterFacades  -初始化内置的 Facade ([AliasLoader](https://github.com/laravel/framework/blob/5.4/src/Illuminate/Foundation/AliasLoader.php#L150) 具体实现, 依靠 spl_autoload_register 和 class_alias)
   - RegisterProviders  -初始化内置 Service Provider ([Application](https://github.com/laravel/framework/blob/5.4/src/Illuminate/Foundation/Application.php#L546) 此处区分实例化时机)
-  - BootProviders  -调用 Service Provider 的 boot 函数, 对
+  - BootProviders  -调用 Service Provider 的 boot 函数
 - 通过 `Pipeline` 将 request 用 middleware 虑一遍, 交给 `dispatchToRouter` 返回的 Closure 处理
 
 

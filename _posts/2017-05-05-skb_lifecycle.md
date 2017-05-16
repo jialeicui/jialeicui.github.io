@@ -17,7 +17,7 @@ categories: linux kernel
 
   注册 PCI 设备时, 系统从 PCI 总线上读取 deviceId 和 vendorId, 来确认是那家公司的什么设备, 比如这里 Intel 的 venderId 就是 `0x8086` , 参考 `struct pci_device_id`
 
-* 系统找到对应注册的 PCI 设备, 初始化改设备时, 调用 probe 这个函数
+* 系统找到对应注册的 PCI 设备, 初始化该设备时, 调用 probe 这个函数
 
 * 挂接网络设备处理函数 `net_device->netdev_ops`, 包括: up/down/设置mac/mtu 等等
 
@@ -252,8 +252,8 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev,
 
   平时主要用的是 `GFP_ATOMIC` 和 `GFP_KERNEL` 两个, 区别如下
 
-  * 在使用 `GFP_KERNEL ` 标志申请内存时, 如果内存不够, 当前进程可能会睡眠等待足够的内存, 所以当前进程必须是可重入的, 所以在中断上下文不可能用这个标志
-  * 在使用 `GFP_KERNEL ` 标志申请内存时, 如果内存不够, 直接返回失败, 不会睡眠
+  * 在使用 `GFP_KERNEL` 标志申请内存时, 如果内存不够, 当前进程可能会睡眠等待足够的内存, 所以当前进程必须是可重入的, 所以在中断上下文不可能用这个标志
+  * 在使用 `GFP_ATOMIC` 标志申请内存时, 如果内存不够, 直接返回失败, 不会睡眠
 
 * NET_IP_ALIGN 偏移
 
@@ -515,7 +515,7 @@ out:
 }
 ```
 
-一般情况下, 系统收到的包都会经 `ptype_base` 进行处理, 各个协议模块使用 `dev_add_pack` 注册, 例如 IP 层的处理函数 `ip_rcv`, TCPv4 的 ` tcp_v4_rcv`   都是是这样挂接到 `ptype_base` 
+一般情况下, 系统收到的包都会经 `ptype_base` 进行处理, 各个协议模块使用 `dev_add_pack` 注册, 例如 IP 层的处理函数 `ip_rcv`, TCPv4 的 `tcp_v4_rcv`  都是是这样挂接到 `ptype_base` 
 
 ##### IP 层处理
 
