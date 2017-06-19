@@ -92,4 +92,4 @@ yum install php56w php56w-opcache php56w-pecl-xdebug php56w-mysqli phpunit -y
 
 
 
-这样, 在出发 Gitlab trigger 时, jenkins 就会开始对项目进行测试了, 执行脚本中添加部署策略, 则可以进行自动部署
+这样, 在触发 Gitlab trigger 时, jenkins 就会开始对项目进行测试了, 执行脚本中添加部署策略, 则可以进行自动部署
